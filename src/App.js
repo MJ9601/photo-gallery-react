@@ -3,22 +3,24 @@ import Card from "./components/Card";
 import CreatePost from "./components/CreatePost";
 import Header from "./components/Header";
 import Modul from "./components/Modul";
+import { useDatabase } from "./customeHooks";
+import { useGlobalState } from "./globalStateProvider";
 
 function App() {
+  const { images } = useDatabase();
+  const [{ selectedPic }] = useGlobalState();
   return (
     <div className="app">
       <Container>
         <Header />
         <CreatePost />
         <Wrap>
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
+          {images.map((img) => (
+            <Card key={img.id} src={img.url} desc={img.desc} />
+          ))}
         </Wrap>
       </Container>
-      <Modul />
+      {selectedPic && <Modul />}
     </div>
   );
 }

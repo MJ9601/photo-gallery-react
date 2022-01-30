@@ -1,18 +1,61 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useGlobalState } from "../globalStateProvider";
+import ProgressBar from "./ProgressBar";
 
 const CreatePost = () => {
-  const [addField, setAddField] = useState(false);
+  const [{ addPost }, dispatch] = useGlobalState();
+  const [desc, setDesc] = useState("");
+  const [file, setFile] = useState(null);
+  const [error, setError] = useState("");
+  const [active, setActive] = useState(false);
+  const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    if (file && allowedTypes.includes(file.type)) {
+      setError("");
+      setActive(true);
+      dispatch({ type: "TOGGLE_ADD_POST" });
+    } else {
+      setFile(null);
+      setError("Please submit correct format");
+    }
+  };
   return (
     <Wrap>
-      <Form addField={addField}>
+      <Form addField={addPost}>
         <Label htmlFor="inputFile">
           Upload Image <div>+</div>
         </Label>
-        <input type="file" id="inputFile" style={{ display: "none" }} />
-        <textarea type="text" placeholder="Description" />
-        <Button> Publish Picture</Button>
+        <input
+          type="file"
+          id="inputFile"
+          style={{ display: "none" }}
+          onChange={(e) => setFile(e.target.files[0])}
+        />
+        <textarea
+          type="text"
+          placeholder="Description"
+          value={desc}
+          onChange={(e) => setDesc(e.target.value)}
+        />
+        <Button onClick={handleClick}> Publish Picture</Button>
+        {(file || error) && (
+          <ErrorDis error={error} file={file}>
+            {error ? error : file.name}
+          </ErrorDis>
+        )}
       </Form>
+      {active && (
+        <ProgressBar
+          file={file}
+          setFile={setFile}
+          setActive={setActive}
+          desc={desc}
+          setDesc={setDesc}
+        />
+      )}
     </Wrap>
   );
 };
@@ -32,11 +75,14 @@ const Form = styled.form`
   > textarea {
     border: none;
     padding: 0.5rem 1rem;
-    width: 30rem;
+    width: 60rem;
     background-color: #eee;
     border-radius: 0.3rem;
     min-height: 5rem;
     font-size: 1.5rem;
+    @media (max-width: 734px) {
+      width: 30rem;
+    }
     &:focus {
       outline: none;
     }
@@ -85,4 +131,10 @@ const Button = styled.button`
     background-color: transparent;
     color: rgba(0, 250, 255, 0.8);
   }
+`;
+const ErrorDis = styled.h2`
+  padding: 1rem 0;
+  font-size: 1.6rem;
+  text-align: center;
+  color: ${(props) => (props.error ? "red" : "green")};
 `;

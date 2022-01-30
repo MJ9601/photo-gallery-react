@@ -1,12 +1,18 @@
 import React from "react";
 import styled from "styled-components";
+import { useGlobalState } from "../globalStateProvider";
 
-const Card = () => {
+const Card = ({ desc, src }) => {
+  const [{}, dispatch] = useGlobalState();
   return (
-    <Wrap>
-      <img src="https://lastfm.freetls.fastly.net/i/u/770x0/85eea12f812d42c5acd4def51167deef.jpg" />
+    <Wrap
+      onClick={() =>
+        dispatch({ type: "SET_PIC", selectedPic: { desc: desc, src: src } })
+      }
+    >
+      <img src={src} />
       <div>
-        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit.</p>
+        <p>{desc}</p>
       </div>
     </Wrap>
   );

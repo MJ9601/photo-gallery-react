@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useGlobalState } from "../globalStateProvider";
 
 const Header = () => {
-  const [addField, setAddField] = useState(false);
+  const [{}, dispatch] = useGlobalState();
   return (
     <Wrap>
       <div>
         <h2>FireGram</h2>
-        <Button onClick={() => setAddField(true)} addField={addField}>
+        <Button onClick={() => dispatch({ type: "TOGGLE_ADD_POST" })}>
           Add Picture
         </Button>
       </div>
@@ -22,7 +23,6 @@ const Header = () => {
 export default Header;
 
 const Button = styled.button`
-  display: ${(props) => (!props.addField ? "block" : "none")};
   width: 20rem;
   padding: 0.5rem;
   border: none;
